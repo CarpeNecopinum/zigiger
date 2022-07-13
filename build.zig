@@ -14,6 +14,7 @@ pub fn build(b: *std.build.Builder) void {
     const exe = b.addExecutable("zigiger", "src/main.zig");
     exe.setTarget(target);
     exe.setBuildMode(mode);
+    exe.addPackagePath("zhp", "lib/zhp/src/zhp.zig");
     exe.install();
 
     const run_cmd = exe.run();
