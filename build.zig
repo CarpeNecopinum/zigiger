@@ -15,6 +15,11 @@ pub fn build(b: *std.build.Builder) void {
     exe.setTarget(target);
     exe.setBuildMode(mode);
     exe.addPackagePath("zhp", "lib/zhp/src/zhp.zig");
+
+    exe.linkLibC();
+    exe.linkSystemLibrary("sqlite3");
+    exe.addPackagePath("sqlite", "lib/zig-sqlite/sqlite.zig");
+    
     exe.install();
 
     const run_cmd = exe.run();
