@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Test Page</title>
+</head>
+
+<body>
+    <h1>Post to /devices/execute</h1>
+    <form id="devices-execute" action="http://localhost:9000/devices/execute" method="post">
+        <label>
+            <input type="text" name="device_id" value="1">
+            Device ID
+        </label>
+        <br />
+        <label>
+            <input type="text" name="command" value="On">
+            Command
+        </label>
+        <br />
+        <input type="submit" value="Submit">
+    </form>
+
+    <script>
+        document.getElementById("devices-execute").addEventListener("submit", function (event) {
+            event.preventDefault();
+            var form = event.target;
+            var data = new FormData(form);
+
+            const request = {
+                device_id: +data.get("device_id"),
+                command: data.get("command")
+            }
+
+            fetch("http://localhost:9000/devices/execute", {
+                method: "POST",
+                body: JSON.stringify(request)
+            }).then(function (response) {
+                console.debug(response)
+            })
+        });
+    </script>
+</body>
+
+</html>

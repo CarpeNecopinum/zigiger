@@ -30,3 +30,10 @@ pub fn all(alloc: std.mem.Allocator) ![]Device {
 
     return stmt.all(Device, alloc, .{}, .{});
 }
+
+pub fn get(id: i64, alloc: std.mem.Allocator) !?Device {
+    var stmt = try db.conn.prepare("SELECT * FROM devices WHERE id = ?");
+    defer stmt.deinit();
+
+    return try stmt.oneAlloc(Device, alloc, .{}, .{id});
+}
