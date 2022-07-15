@@ -2,7 +2,7 @@ const std = @import("std");
 const sender433 = @import("./sender433.zig");
 
 pub const Actor = struct {
-    execute: fn(allocator: std.mem.Allocator, command: []u8, actor_data: []u8) anyerror!void 
+    execute: fn(allocator: std.mem.Allocator, command: *std.json.Value, actor_data: []u8) anyerror!void 
 };
 
 pub const ActorMap = std.StringHashMap(Actor);

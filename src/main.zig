@@ -24,15 +24,21 @@ const DevicesExecuteHandler = struct {
     pub fn post(_: *DevicesExecuteHandler, req: *web.Request, res: *web.Response) !void {
         try req.readBody(req.stream.?);
 
-        std.debug.print("Got request: {s}\n", .{req.content});
-
         var parser = std.json.Parser.init(res.allocator, false);
         const request = try parser.parse(req.content.?.data.buffer);
 
         const device_id = request.root.Object.get("device_id").?.Integer;
         const device = try Devices.get(device_id, res.allocator);
+        if (device) |dev| {
+            const actor = Actors.actors_by_name.get(dev.actor).?;
+            try actor.execute(res.allocator, &request.root.Object.get("command").?, dev.actor_data orelse "");
+            _ = try res.writeFn("OK.");
+        } else {
+            res.status = web.responses.NOT_FOUND;
+            _ = try res.writeFn("Unknown Device");
+            return;
+        }
 
-        std.debug.print("Would use device {s}\n", .{device});
     }
 };
 
@@ -68,7 +74,7 @@ pub fn main() anyerror!void {
     try Devices.init();
     try Actors.init(allocator);
 
-    var app = web.Application.init(allocator, .{ .debug = true, .handler_buffer_size = 1024 * 1024 });
+    var app = web.Application.init(allocator, .{ .debug = true });
     defer app.deinit();
 
     try app.listen("127.0.0.1", 9000);
